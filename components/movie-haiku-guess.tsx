@@ -80,9 +80,7 @@ export function MovieHaikuGuess() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`mt-3 sm:mt-4 text-center text-base sm:text-lg font-semibold ${
-                result.startsWith("Correct") ? "text-green-600" : "text-red-400"
-              }`}
+              className={`mt-3 sm:mt-4 text-center text-base sm:text-lg font-semibold text-gray-600`}
             >
               {result}
             </motion.div>
