@@ -25,9 +25,7 @@ export function MovieHaikuGuess() {
     if (guess.toLowerCase() === movieHaiku.movie.toLowerCase()) {
       setResult("Correct! Well done!");
     } else {
-      setResult(
-        `Sorry, that's not correct. The movie was ${movieHaiku.movie}.`
-      );
+      setResult(`Sorry, that's not correct.`);
     }
   };
 
@@ -36,7 +34,7 @@ export function MovieHaikuGuess() {
       <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-lg">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-red-500">
-            Reel Haiku
+            Reel Haikus
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -83,7 +81,7 @@ export function MovieHaikuGuess() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className={`mt-4 text-center text-lg font-semibold ${
-                result.startsWith("Correct") ? "text-green-600" : "text-red-600"
+                result.startsWith("Correct") ? "text-green-600" : "text-red-400"
               }`}
             >
               {result}
