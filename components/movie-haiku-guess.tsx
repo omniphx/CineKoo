@@ -23,8 +23,9 @@ const dailyHaikus: Haiku[] = [
   defaultHaiku,
   {
     date: "2025-01-03",
-    haiku: "Time manipulates,\nRhythmic gunfire in dance,\nA temporal fight.",
-    movie: "Tenet",
+    haiku:
+      "Chopin's notes resound,\nA soul seeking redemption,\nIn World War's shadows.",
+    movie: "The Pianist",
   },
   {
     date: "2025-01-04",
@@ -52,9 +53,9 @@ const dailyHaikus: Haiku[] = [
   },
   {
     date: "2025-01-08",
-    haiku:
-      "Chopin's notes resound,\nA soul seeking redemption,\nIn World War's shadows.",
-    movie: "The Pianist",
+
+    haiku: "Time manipulates,\nRhythmic gunfire in dance,\nA temporal fight.",
+    movie: "Tenet",
   },
   {
     date: "2025-01-09",
