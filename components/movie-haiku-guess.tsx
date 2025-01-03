@@ -5,16 +5,98 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { format, subMinutes } from "date-fns";
 
-const movieHaiku = {
+type Haiku = {
+  date: string;
+  haiku: string;
+  movie: string;
+};
+
+const defaultHaiku: Haiku = {
+  date: "2025-01-02",
   haiku: `Dreaming in layers,\nMind's architecture bends time,\nReality blurs.`,
   movie: "Inception",
 };
+
+const dailyHaikus: Haiku[] = [
+  defaultHaiku,
+  {
+    date: "2025-01-03",
+    haiku: "Time manipulates,\nRhythmic gunfire in dance,\nA temporal fight.",
+    movie: "Tenet",
+  },
+  {
+    date: "2025-01-04",
+    haiku:
+      "Language unlocks peace,\nAliens with circular words,\nPast, present, future.",
+    movie: "Arrival",
+  },
+  {
+    date: "2025-01-05",
+    haiku:
+      "Silent nighttime flights,\nVigilante seeks justice,\nCity's dark savior.",
+    movie: "Watchmen",
+  },
+  {
+    date: "2025-01-06",
+    haiku:
+      "Broken mask reveals,\nA grotesque, fractured being,\nSeeks return to light.",
+    movie: "Joker",
+  },
+  {
+    date: "2025-01-07",
+    haiku:
+      "Survival's new world,\nA post-apocalyptic tale,\nSilent creatures hunt.",
+    movie: "A Quiet Place",
+  },
+  {
+    date: "2025-01-08",
+    haiku:
+      "Chopin's notes resound,\nA soul seeking redemption,\nIn World War's shadows.",
+    movie: "The Pianist",
+  },
+  {
+    date: "2025-01-09",
+    haiku:
+      "Hidden under snow,\nWestern fear and suspense builds,\nMysteries unravel.",
+    movie: "Wind River",
+  },
+  {
+    date: "2025-01-10",
+    haiku: "Haunted by old sins,\nIn kitchen's inferno,\nMastery and flaw.",
+    movie: "Burnt",
+  },
+  {
+    date: "2025-01-11",
+    haiku:
+      "Alien shores call,\nMemory’s prison unlocked,\nA lost homeward bound.",
+    movie: "Interstellar",
+  },
+  {
+    date: "2025-01-12",
+    haiku:
+      "Silent and stoic,\nA path to the cold north calls,\nRagnarok awaits.",
+    movie: "The Northman",
+  },
+];
+
+function getTodaysHaiku() {
+  const today = new Date();
+  const timezoneOffset = today.getTimezoneOffset();
+  const localISODate = format(subMinutes(today, timezoneOffset), "yyyy-MM-dd");
+
+  return (
+    dailyHaikus.find((haiku) => haiku.date === localISODate) || defaultHaiku
+  );
+}
 
 export function MovieHaikuGuess() {
   const [guess, setGuess] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [showHaiku, setShowHaiku] = useState(false);
+
+  const todaysHaiku = getTodaysHaiku();
 
   useEffect(() => {
     setShowHaiku(true);
@@ -22,7 +104,7 @@ export function MovieHaikuGuess() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (guess.toLowerCase() === movieHaiku.movie.toLowerCase()) {
+    if (guess.toLowerCase().trim() === todaysHaiku.movie.toLowerCase().trim()) {
       setResult("Correct! Well done! 🎉");
     } else {
       setResult(`Sorry, that's not correct.`);
@@ -37,7 +119,7 @@ export function MovieHaikuGuess() {
             ✨ Reel Haikus ✨
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 sm:p-6">
+        <CardContent className="pb-4 sm:pb-6">
           <div className="mb-4 sm:mb-6 text-center">
             <p className="text-base sm:text-lg font-semibold mb-2 text-gray-700">
               Guess the movie based on this haiku:
@@ -48,7 +130,7 @@ export function MovieHaikuGuess() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="italic text-base sm:text-lg"
             >
-              {movieHaiku.haiku.split("\n").map((line, index) => (
+              {todaysHaiku.haiku.split("\n").map((line, index) => (
                 <motion.span
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
@@ -67,7 +149,7 @@ export function MovieHaikuGuess() {
               value={guess}
               onChange={(e) => setGuess(e.target.value)}
               placeholder="Enter your guess"
-              className="w-full text-base sm:text-lg border-2 border-purple-300 focus:border-purple-500 focus:ring-purple-500 p-2 sm:p-3"
+              className="w-full text-base sm:text-lg border-2 border-purple-300 focus:border-purple-500 focus:ring-blue-500 p-2 sm:p-3"
             />
             <Button
               type="submit"
@@ -80,7 +162,7 @@ export function MovieHaikuGuess() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`mt-3 sm:mt-4 text-center text-base sm:text-lg font-semibold text-gray-600`}
+              className={`mt-3 sm:mt-4 text-center text-base sm:text-lg`}
             >
               {result}
             </motion.div>
