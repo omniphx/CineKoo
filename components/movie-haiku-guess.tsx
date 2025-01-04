@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -100,7 +100,7 @@ export function MovieHaikuGuess() {
   const [showHaiku, setShowHaiku] = useState(false);
   const [suggestions, setSuggestions] = useState<Movie[]>([]);
 
-  const searchMovies = async (query: string) => {
+  const searchMovies = useCallback(async (query: string) => {
     if (!query || query.length < 2) {
       setSuggestions([]);
       return;
@@ -114,7 +114,10 @@ export function MovieHaikuGuess() {
       setSuggestions(
         data.results
           .filter(
-            (movie: Movie) => movie.popularity > 2 && !!movie.release_date
+            (movie: Movie) =>
+              movie.popularity > 2 &&
+              !!movie.release_date &&
+              !!movie.poster_path
           )
           .slice(0, 5)
       );
@@ -122,9 +125,12 @@ export function MovieHaikuGuess() {
       console.error("Error searching movies:", error);
       setSuggestions([]);
     }
-  };
+  }, []);
 
-  const debouncedSearch = debounce(searchMovies, 300);
+  const debouncedSearch = useMemo(
+    () => debounce(searchMovies, 300),
+    [searchMovies]
+  );
 
   const todaysHaiku = getTodaysHaiku();
 
@@ -192,7 +198,7 @@ export function MovieHaikuGuess() {
                       key={suggestion.id}
                       className="px-4 py-2 hover:bg-purple-50 cursor-pointer flex items-center gap-3"
                       onClick={() => {
-                        setGuess(suggestion.original_title);
+                        setGuess(suggestion.title);
                         setSuggestions([]);
                       }}
                     >
