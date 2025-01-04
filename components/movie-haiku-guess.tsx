@@ -112,6 +112,16 @@ export function MovieHaikuGuess() {
     }
   };
 
+  // Add this state for suggestions
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // Add this function to filter movies
+  const filterMovies = (input: string) => {
+    return dailyHaikus
+      .map((haiku) => haiku.movie)
+      .filter((movie) => movie.toLowerCase().includes(input.toLowerCase()));
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-teal-400 via-purple-500 to-red-500">
       <Card className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-sm shadow-lg">
@@ -145,13 +155,36 @@ export function MovieHaikuGuess() {
             </motion.div>
           </div>
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            <Input
-              type="text"
-              value={guess}
-              onChange={(e) => setGuess(e.target.value)}
-              placeholder="Enter your guess"
-              className="w-full text-base sm:text-lg border-2 border-purple-300 focus:border-purple-500 focus:ring-blue-500 p-2 sm:p-3"
-            />
+            <div className="relative">
+              <Input
+                type="text"
+                value={guess}
+                onChange={(e) => {
+                  setGuess(e.target.value);
+                  setSuggestions(
+                    e.target.value ? filterMovies(e.target.value) : []
+                  );
+                }}
+                placeholder="Enter your guess"
+                className="w-full text-base sm:text-lg border-2 border-purple-300 focus:border-purple-500 focus:ring-blue-500 p-2 sm:p-3"
+              />
+              {suggestions.length > 0 && (
+                <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1">
+                  {suggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className="px-4 py-2 hover:bg-purple-50 cursor-pointer"
+                      onClick={() => {
+                        setGuess(suggestion);
+                        setSuggestions([]);
+                      }}
+                    >
+                      {suggestion}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <Button
               type="submit"
               className="w-full text-base sm:text-lg py-2 sm:py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"
