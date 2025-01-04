@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { format, subMinutes } from "date-fns";
 import debounce from "lodash/debounce";
 import { Movie } from "@/lib/schemas";
@@ -96,7 +96,7 @@ function getTodaysHaiku() {
 
 export function MovieHaikuGuess() {
   const [guess, setGuess] = useState("");
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<string>();
   const [showHaiku, setShowHaiku] = useState(false);
   const [suggestions, setSuggestions] = useState<Movie[]>([]);
 
@@ -185,6 +185,7 @@ export function MovieHaikuGuess() {
                 type="text"
                 value={guess}
                 onChange={(e) => {
+                  setResult(undefined);
                   setGuess(e.target.value);
                   debouncedSearch(e.target.value);
                 }}
@@ -225,15 +226,19 @@ export function MovieHaikuGuess() {
               Submit Guess 🎬
             </Button>
           </form>
-          {result && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`mt-3 sm:mt-4 text-center text-base sm:text-lg`}
-            >
-              {result}
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {result && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className={`mt-3 sm:mt-4 text-center text-base sm:text-lg`}
+              >
+                {result}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </CardContent>
       </Card>
     </div>
