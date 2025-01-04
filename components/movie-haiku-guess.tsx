@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { format, subMinutes } from "date-fns";
+import debounce from "lodash/debounce";
+import { Movie } from "@/lib/schemas";
 
 type Haiku = {
   date: string;
@@ -96,6 +98,33 @@ export function MovieHaikuGuess() {
   const [guess, setGuess] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [showHaiku, setShowHaiku] = useState(false);
+  const [suggestions, setSuggestions] = useState<Movie[]>([]);
+
+  const searchMovies = async (query: string) => {
+    if (!query || query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/movies?query=${encodeURIComponent(query)}`
+      );
+      const { data } = await response.json();
+      setSuggestions(
+        data.results
+          .filter(
+            (movie: Movie) => movie.popularity > 2 && !!movie.release_date
+          )
+          .slice(0, 5)
+      );
+    } catch (error) {
+      console.error("Error searching movies:", error);
+      setSuggestions([]);
+    }
+  };
+
+  const debouncedSearch = debounce(searchMovies, 300);
 
   const todaysHaiku = getTodaysHaiku();
 
@@ -110,16 +139,6 @@ export function MovieHaikuGuess() {
     } else {
       setResult(`Sorry, that's not correct.`);
     }
-  };
-
-  // Add this state for suggestions
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-
-  // Add this function to filter movies
-  const filterMovies = (input: string) => {
-    return dailyHaikus
-      .map((haiku) => haiku.movie)
-      .filter((movie) => movie.toLowerCase().includes(input.toLowerCase()));
   };
 
   return (
@@ -161,25 +180,33 @@ export function MovieHaikuGuess() {
                 value={guess}
                 onChange={(e) => {
                   setGuess(e.target.value);
-                  setSuggestions(
-                    e.target.value ? filterMovies(e.target.value) : []
-                  );
+                  debouncedSearch(e.target.value);
                 }}
                 placeholder="Enter your guess"
                 className="w-full text-base sm:text-lg border-2 border-purple-300 focus:border-purple-500 focus:ring-blue-500 p-2 sm:p-3"
               />
               {suggestions.length > 0 && (
-                <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1">
-                  {suggestions.map((suggestion, index) => (
+                <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
+                  {suggestions.map((suggestion) => (
                     <div
-                      key={index}
-                      className="px-4 py-2 hover:bg-purple-50 cursor-pointer"
+                      key={suggestion.id}
+                      className="px-4 py-2 hover:bg-purple-50 cursor-pointer flex items-center gap-3"
                       onClick={() => {
-                        setGuess(suggestion);
+                        setGuess(suggestion.original_title);
                         setSuggestions([]);
                       }}
                     >
-                      {suggestion}
+                      {suggestion.poster_path && (
+                        <img
+                          src={`https://image.tmdb.org/t/p/w92${suggestion.poster_path}`}
+                          alt={suggestion.title}
+                          className="w-12 h-auto rounded"
+                        />
+                      )}
+                      <span>
+                        {suggestion.title} (
+                        {suggestion.release_date.substring(0, 4)})
+                      </span>
                     </div>
                   ))}
                 </div>

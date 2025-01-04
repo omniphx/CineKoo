@@ -1,3 +1,5 @@
+import { MovieSearchResponseSchema } from "@/lib/schemas";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("query") || "indiana";
@@ -11,7 +13,9 @@ export async function GET(request: Request) {
       },
     }
   );
-  const data = await res.json();
+
+  const rawData = await res.json();
+  const data = MovieSearchResponseSchema.parse(rawData);
 
   return Response.json({ data });
 }
