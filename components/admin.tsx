@@ -24,11 +24,41 @@ export function Admin() {
   const [movieQuery, setMovieQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { register, handleSubmit, reset, setValue } = useForm<HaikuFormData>();
+  const { register, handleSubmit, reset, setValue, getValues } =
+    useForm<HaikuFormData>();
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading haikus</div>;
   if (!haikus) return <div>No haikus found</div>;
+
+  const generateHaiku = async (prompt: string) => {
+    try {
+      setErrorMessage("");
+      const response = await fetch("/api/haikus/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate haiku");
+      }
+
+      const data = await response.json();
+      setValue("body", data.choices[0].message.content);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unknown error");
+    }
+  };
 
   const onSubmit = async (data: HaikuFormData) => {
     try {
@@ -156,9 +186,16 @@ export function Admin() {
             </label>
             <textarea
               {...register("prompt", { required: true })}
-              rows={6}
+              rows={2}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
+            <button
+              type="button"
+              onClick={() => generateHaiku(getValues("prompt"))}
+              className="mt-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Generate Haiku
+            </button>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
