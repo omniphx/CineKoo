@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, subMinutes } from "date-fns";
-import debounce from "lodash/debounce";
-import { Movie } from "@/lib/schemas";
+import { MovieSearchInput } from "./ui/move-search-input";
 
 type Haiku = {
   date: string;
@@ -98,40 +96,6 @@ export function MovieHaikuGuess() {
   const [guess, setGuess] = useState("");
   const [result, setResult] = useState<string>();
   const [showHaiku, setShowHaiku] = useState(false);
-  const [suggestions, setSuggestions] = useState<Movie[]>([]);
-
-  const searchMovies = useCallback(async (query: string) => {
-    if (!query || query.length < 2) {
-      setSuggestions([]);
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `/api/movies?query=${encodeURIComponent(query)}`
-      );
-      const { data } = await response.json();
-      setSuggestions(
-        data.results
-          .filter(
-            (movie: Movie) =>
-              movie.popularity > 2 &&
-              !!movie.release_date &&
-              !!movie.poster_path
-          )
-          .slice(0, 5)
-      );
-    } catch (error) {
-      console.error("Error searching movies:", error);
-      setSuggestions([]);
-    }
-  }, []);
-
-  const debouncedSearch = useMemo(
-    () => debounce(searchMovies, 300),
-    [searchMovies]
-  );
-
   const todaysHaiku = getTodaysHaiku();
 
   useEffect(() => {
@@ -180,45 +144,14 @@ export function MovieHaikuGuess() {
             </motion.div>
           </div>
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            <div className="relative">
-              <Input
-                type="text"
-                value={guess}
-                onChange={(e) => {
-                  setResult(undefined);
-                  setGuess(e.target.value);
-                  debouncedSearch(e.target.value);
-                }}
-                placeholder="Enter your guess"
-                className="w-full text-base sm:text-lg border-2 border-purple-300 focus:border-purple-500 focus:ring-blue-500 p-2 sm:p-3"
-              />
-              {suggestions.length > 0 && (
-                <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
-                  {suggestions.map((suggestion) => (
-                    <div
-                      key={suggestion.id}
-                      className="px-4 py-2 hover:bg-purple-50 cursor-pointer flex items-center gap-3"
-                      onClick={() => {
-                        setGuess(suggestion.title);
-                        setSuggestions([]);
-                      }}
-                    >
-                      {suggestion.poster_path && (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w92${suggestion.poster_path}`}
-                          alt={suggestion.title}
-                          className="w-12 h-auto rounded"
-                        />
-                      )}
-                      <span>
-                        {suggestion.title} (
-                        {suggestion.release_date.substring(0, 4)})
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <MovieSearchInput
+              value={guess}
+              onChange={(value) => {
+                setResult(undefined);
+                setGuess(value);
+              }}
+              placeholder="Enter your guess"
+            />
             <Button
               type="submit"
               className="w-full text-base sm:text-lg py-2 sm:py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"

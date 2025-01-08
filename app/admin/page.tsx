@@ -1,10 +1,10 @@
-import { MovieHaikuGuess } from "@/components/movie-haiku-guess";
+import { Admin } from "@/components/admin";
 import { Providers } from "@/components/providers";
 
 export default function Page() {
   return (
     <Providers>
-      <MovieHaikuGuess />
+      <Admin />
     </Providers>
   );
 }
