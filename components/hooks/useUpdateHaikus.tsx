@@ -6,12 +6,20 @@ export function useUpdateHaiku() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (haiku: Haiku) =>
-      fetch("/api/haikus", {
+    mutationFn: async (haiku: Haiku) => {
+      const response = await fetch("/api/haikus", {
         method: "PUT",
         body: JSON.stringify(haiku),
         headers: { "Content-Type": "application/json" },
-      }).then((res) => res.json()),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update haiku");
+      }
+
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["haikus"] });
     },

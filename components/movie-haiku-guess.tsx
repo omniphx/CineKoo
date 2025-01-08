@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, subMinutes } from "date-fns";
-import { MovieSearchInput } from "./ui/move-search-input";
+import { MovieSearchInput } from "./ui/movie-search-input";
 
 type Haiku = {
   date: string;

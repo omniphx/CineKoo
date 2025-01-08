@@ -1,4 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import {
+  PrismaClientInitializationError,
+  PrismaClientKnownRequestError,
+  PrismaClientRustPanicError,
+  PrismaClientValidationError,
+} from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
@@ -15,12 +21,8 @@ export async function POST(request: Request) {
       data: body,
     });
     return NextResponse.json(haiku, { status: 201 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Failed to create haiku" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    return handleError(error);
   }
 }
 
@@ -36,11 +38,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json(haiku);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Failed to update haiku" },
-      { status: 500 }
-    );
+    return handleError(error);
   }
 }
 
@@ -54,10 +52,21 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json(haiku);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Failed to delete haiku" },
-      { status: 500 }
-    );
+    return handleError(error);
   }
+}
+
+function handleError(error: unknown) {
+  console.error(error);
+
+  if (
+    error instanceof PrismaClientValidationError ||
+    error instanceof PrismaClientInitializationError ||
+    error instanceof PrismaClientRustPanicError ||
+    error instanceof PrismaClientKnownRequestError ||
+    error instanceof Error
+  ) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  return NextResponse.json({ error: "Failed" }, { status: 500 });
 }
