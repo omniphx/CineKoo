@@ -4,99 +4,16 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { format, subMinutes } from "date-fns";
 import { MovieSearchInput } from "./ui/movie-search-input";
-
-type Haiku = {
-  date: string;
-  haiku: string;
-  movie: string;
-};
-
-const defaultHaiku: Haiku = {
-  date: "2025-01-02",
-  haiku: `Dreaming in layers,\nMind's architecture bends time,\nReality blurs.`,
-  movie: "Inception",
-};
-
-const dailyHaikus: Haiku[] = [
-  defaultHaiku,
-  {
-    date: "2025-01-03",
-    haiku:
-      "Chopin's notes resound,\nA soul seeking redemption,\nIn World War's shadows.",
-    movie: "The Pianist",
-  },
-  {
-    date: "2025-01-04",
-    haiku:
-      "Language unlocks peace,\nAliens with circular words,\nPast, present, future.",
-    movie: "Arrival",
-  },
-  {
-    date: "2025-01-05",
-    haiku:
-      "Silent nighttime flights,\nVigilante seeks justice,\nCity's dark savior.",
-    movie: "Watchmen",
-  },
-  {
-    date: "2025-01-06",
-    haiku:
-      "Broken mask reveals,\nA grotesque, fractured being,\nSeeks return to light.",
-    movie: "Joker",
-  },
-  {
-    date: "2025-01-07",
-    haiku:
-      "Survival's new world,\nA post-apocalyptic tale,\nSilent creatures hunt.",
-    movie: "A Quiet Place",
-  },
-  {
-    date: "2025-01-08",
-
-    haiku: "Time manipulates,\nRhythmic gunfire in dance,\nA temporal fight.",
-    movie: "Tenet",
-  },
-  {
-    date: "2025-01-09",
-    haiku:
-      "Hidden under snow,\nWestern fear and suspense builds,\nMysteries unravel.",
-    movie: "Wind River",
-  },
-  {
-    date: "2025-01-10",
-    haiku: "Haunted by old sins,\nIn kitchen's inferno,\nMastery and flaw.",
-    movie: "Burnt",
-  },
-  {
-    date: "2025-01-11",
-    haiku:
-      "Alien shores call,\nMemory’s prison unlocked,\nA lost homeward bound.",
-    movie: "Interstellar",
-  },
-  {
-    date: "2025-01-12",
-    haiku:
-      "Silent and stoic,\nA path to the cold north calls,\nRagnarok awaits.",
-    movie: "The Northman",
-  },
-];
-
-function getTodaysHaiku() {
-  const today = new Date();
-  const timezoneOffset = today.getTimezoneOffset();
-  const localISODate = format(subMinutes(today, timezoneOffset), "yyyy-MM-dd");
-
-  return (
-    dailyHaikus.find((haiku) => haiku.date === localISODate) || defaultHaiku
-  );
-}
+import { useDailyHaiku } from "@/components/hooks/useDailyHaiku";
+import { Movie } from "@/lib/schemas";
 
 export function MovieHaikuGuess() {
   const [guess, setGuess] = useState("");
+  const [selection, setSelection] = useState<Movie>();
   const [result, setResult] = useState<string>();
   const [showHaiku, setShowHaiku] = useState(false);
-  const todaysHaiku = getTodaysHaiku();
+  const { data: todaysHaiku } = useDailyHaiku();
 
   useEffect(() => {
     setShowHaiku(true);
@@ -104,7 +21,7 @@ export function MovieHaikuGuess() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (guess.toLowerCase().trim() === todaysHaiku.movie.toLowerCase().trim()) {
+    if (selection?.id === todaysHaiku?.movie_id) {
       setResult("Correct! Well done! 🎉");
     } else {
       setResult(`Sorry, that's not correct.`);
@@ -130,7 +47,7 @@ export function MovieHaikuGuess() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="italic text-base sm:text-lg"
             >
-              {todaysHaiku.haiku.split("\n").map((line, index) => (
+              {todaysHaiku?.body.split("\n").map((line, index) => (
                 <motion.span
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
@@ -150,6 +67,7 @@ export function MovieHaikuGuess() {
                 setResult(undefined);
                 setGuess(value);
               }}
+              onSelect={(value) => setSelection(value)}
               placeholder="Enter your guess"
             />
             <Button
