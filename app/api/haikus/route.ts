@@ -6,6 +6,7 @@ import {
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
+export const fetchCache = "force-no-store";
 
 const prisma = new PrismaClient();
 

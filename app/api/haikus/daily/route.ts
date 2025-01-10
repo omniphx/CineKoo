@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { endOfDay, startOfDay } from "date-fns";
+export const fetchCache = "force-no-store";
 
 const prisma = new PrismaClient();
 
