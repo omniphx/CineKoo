@@ -10,9 +10,17 @@ export const fetchCache = "force-no-store";
 
 const prisma = new PrismaClient();
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   const haikus = await prisma.haiku.findMany();
-  return Response.json(haikus);
+  return NextResponse.json(haikus, {
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
+      "Vercel-CDN-Cache-Control": "no-store",
+    },
+  });
 }
 
 export async function POST(request: Request) {
