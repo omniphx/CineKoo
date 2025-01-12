@@ -7,13 +7,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MovieSearchInput } from "./ui/movie-search-input";
 import { useDailyHaiku } from "@/components/hooks/useDailyHaiku";
 import { Movie } from "@/lib/schemas";
+import { useMovieDetails } from "@/components/hooks/useMovieDetails";
 
 export function MovieHaikuGuess() {
   const [guess, setGuess] = useState("");
   const [selection, setSelection] = useState<Movie>();
   const [result, setResult] = useState<string>();
   const [showHaiku, setShowHaiku] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
   const { data: todaysHaiku } = useDailyHaiku();
+  const { data: movieDetails } = useMovieDetails(
+    gameOver ? todaysHaiku?.movie_id : undefined
+  );
+
+  const MAX_ATTEMPTS = 3;
 
   useEffect(() => {
     setShowHaiku(true);
@@ -21,12 +29,56 @@ export function MovieHaikuGuess() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
+
     if (selection?.id === todaysHaiku?.movie_id) {
       setResult("Correct! Well done! 🎉");
+      setGameOver(true);
     } else {
-      setResult(`Sorry, that's not correct.`);
+      if (newAttempts >= MAX_ATTEMPTS) {
+        setResult("Game Over!");
+        setGameOver(true);
+      } else {
+        setResult(
+          `Sorry, that's not correct. ${MAX_ATTEMPTS - newAttempts} ${
+            MAX_ATTEMPTS - newAttempts === 1 ? "try" : "tries"
+          } remaining.`
+        );
+      }
     }
+    setGuess("");
+    setSelection(undefined);
   };
+
+  const MovieDetails = () => (
+    <div className="bg-gray-100 rounded-lg p-4 mt-4">
+      <div className="flex gap-4">
+        {movieDetails?.poster_path && (
+          <img
+            src={`https://image.tmdb.org/t/p/w92${movieDetails.poster_path}`}
+            alt={movieDetails.title}
+            className="rounded-lg w-20 h-auto"
+          />
+        )}
+        <div className="flex-1">
+          <h3 className="font-semibold text-lg mb-2">{movieDetails?.title}</h3>
+          <div className="text-sm text-gray-600">
+            <p className="mb-1">
+              Release Year: {movieDetails?.release_date?.split("-")[0]}
+            </p>
+            <p className="mb-1">
+              Rating: ⭐️ {movieDetails?.vote_average.toFixed(1)}/10
+            </p>
+            {movieDetails?.overview && (
+              <p className="line-clamp-3">{movieDetails.overview}</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-teal-400 via-purple-500 to-red-500">
@@ -60,23 +112,28 @@ export function MovieHaikuGuess() {
               ))}
             </motion.div>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            <MovieSearchInput
-              value={guess}
-              onChange={(value) => {
-                setResult(undefined);
-                setGuess(value);
-              }}
-              onSelect={(value) => setSelection(value)}
-              placeholder="Enter your guess"
-            />
-            <Button
-              type="submit"
-              className="w-full text-base sm:text-lg py-2 sm:py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"
-            >
-              Submit Guess 🎬
-            </Button>
-          </form>
+          {!gameOver ? (
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+              <MovieSearchInput
+                value={guess}
+                onChange={(value) => {
+                  setGuess(value);
+                }}
+                onSelect={(value) => setSelection(value)}
+                placeholder="Enter your guess"
+              />
+              <Button
+                type="submit"
+                className="w-full text-base sm:text-lg py-2 sm:py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"
+                disabled={!selection}
+              >
+                Submit Guess 🎬
+              </Button>
+            </form>
+          ) : (
+            <MovieDetails />
+          )}
+
           <AnimatePresence>
             {result && (
               <motion.div

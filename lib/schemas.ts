@@ -24,6 +24,16 @@ export const MovieSearchResponseSchema = z.object({
   total_results: z.number(),
 });
 
+export const MovieDetailsSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  overview: z.string().nullable(),
+  release_date: z.string().nullable(),
+  poster_path: z.string().nullable(),
+  vote_average: z.number(),
+});
+
 // Type inference
 export type Movie = z.infer<typeof MovieSchema>;
 export type MovieSearchResponse = z.infer<typeof MovieSearchResponseSchema>;
+export type MovieDetails = z.infer<typeof MovieDetailsSchema>;
