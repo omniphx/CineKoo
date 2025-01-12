@@ -6,22 +6,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { MovieSearchInput } from "./ui/movie-search-input";
 import { useDailyHaiku } from "@/components/hooks/useDailyHaiku";
-import { Movie } from "@/lib/schemas";
 import { useMovieDetails } from "@/components/hooks/useMovieDetails";
+import { useGameStore } from "@/lib/store";
 
 export function MovieHaikuGuess() {
-  const [guess, setGuess] = useState("");
-  const [selection, setSelection] = useState<Movie>();
-  const [result, setResult] = useState<string>();
   const [showHaiku, setShowHaiku] = useState(false);
-  const [attempts, setAttempts] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
   const { data: todaysHaiku } = useDailyHaiku();
   const { data: movieDetails } = useMovieDetails(
-    gameOver ? todaysHaiku?.movie_id : undefined
+    useGameStore((state) => state.gameOver) ? todaysHaiku?.movie_id : undefined
   );
 
-  const MAX_ATTEMPTS = 3;
+  const {
+    guess,
+    selection,
+    result,
+    gameOver,
+    setGuess,
+    setSelection,
+    submitGuess,
+  } = useGameStore();
 
   useEffect(() => {
     setShowHaiku(true);
@@ -29,27 +32,9 @@ export function MovieHaikuGuess() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const newAttempts = attempts + 1;
-    setAttempts(newAttempts);
-
-    if (selection?.id === todaysHaiku?.movie_id) {
-      setResult("Correct! Well done! 🎉");
-      setGameOver(true);
-    } else {
-      if (newAttempts >= MAX_ATTEMPTS) {
-        setResult("Game Over!");
-        setGameOver(true);
-      } else {
-        setResult(
-          `Sorry, that's not correct. ${MAX_ATTEMPTS - newAttempts} ${
-            MAX_ATTEMPTS - newAttempts === 1 ? "try" : "tries"
-          } remaining.`
-        );
-      }
+    if (todaysHaiku?.movie_id) {
+      submitGuess(todaysHaiku.movie_id);
     }
-    setGuess("");
-    setSelection(undefined);
   };
 
   const MovieDetails = () => (
@@ -116,9 +101,7 @@ export function MovieHaikuGuess() {
             <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
               <MovieSearchInput
                 value={guess}
-                onChange={(value) => {
-                  setGuess(value);
-                }}
+                onChange={(value) => setGuess(value)}
                 onSelect={(value) => setSelection(value)}
                 placeholder="Enter your guess"
               />
