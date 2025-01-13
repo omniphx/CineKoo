@@ -7,14 +7,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MovieSearchInput } from "./ui/movie-search-input";
 import { useDailyHaiku } from "@/components/hooks/useDailyHaiku";
 import { useMovieDetails } from "@/components/hooks/useMovieDetails";
-import { useGameStore } from "@/lib/store";
+import { useMovieGame } from "@/lib/store";
 
 export function MovieHaikuGuess() {
   const [showHaiku, setShowHaiku] = useState(false);
   const { data: todaysHaiku } = useDailyHaiku();
-  const { data: movieDetails } = useMovieDetails(
-    useGameStore((state) => state.gameOver) ? todaysHaiku?.movie_id : undefined
-  );
+  const dailyMovieId = todaysHaiku?.movie_id || 0;
 
   const {
     guess,
@@ -24,7 +22,11 @@ export function MovieHaikuGuess() {
     setGuess,
     setSelection,
     submitGuess,
-  } = useGameStore();
+  } = useMovieGame(dailyMovieId);
+
+  const { data: movieDetails } = useMovieDetails(
+    gameOver ? todaysHaiku?.movie_id : undefined
+  );
 
   useEffect(() => {
     setShowHaiku(true);
