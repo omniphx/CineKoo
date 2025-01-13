@@ -38,13 +38,13 @@ export function MovieHaikuGuess() {
   };
 
   const MovieDetails = () => (
-    <div className="bg-gray-100 rounded-lg p-4 mt-4">
+    <div className="bg-white rounded-lg p-4 mt-4">
       <div className="flex gap-4">
         {movieDetails?.poster_path && (
           <img
             src={`https://image.tmdb.org/t/p/w92${movieDetails.poster_path}`}
             alt={movieDetails.title}
-            className="rounded-lg w-20 h-auto"
+            className="rounded-lg w-auto h-auto"
           />
         )}
         <div className="flex-1">
