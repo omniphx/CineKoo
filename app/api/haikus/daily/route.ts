@@ -4,6 +4,8 @@ export const fetchCache = "force-no-store";
 
 const prisma = new PrismaClient();
 
+export const revalidate = 0;
+
 export async function GET() {
   const today = new Date();
 

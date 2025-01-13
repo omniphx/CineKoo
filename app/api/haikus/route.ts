@@ -6,21 +6,14 @@ import {
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
-export const fetchCache = "force-no-store";
 
 const prisma = new PrismaClient();
 
-export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function GET() {
   const haikus = await prisma.haiku.findMany();
-  return NextResponse.json(haikus, {
-    headers: {
-      "Cache-Control": "no-store, max-age=0",
-      "Vercel-CDN-Cache-Control": "no-store",
-    },
-  });
+  return NextResponse.json(haikus);
 }
 
 export async function POST(request: Request) {
