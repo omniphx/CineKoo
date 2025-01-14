@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import {
   PrismaClientInitializationError,
   PrismaClientKnownRequestError,
@@ -6,8 +6,6 @@ import {
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
 
 export const revalidate = 0;
 
