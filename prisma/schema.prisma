@@ -29,6 +29,17 @@ model HaikuGuess {
   @@index([haikuId])
 }
 
+model HaikuStats {
+  id              Int      @id @default(autoincrement())
+  haiku           Haiku    @relation(fields: [haikuId], references: [id])
+  haikuId         Int      @unique  // One-to-one relationship with Haiku
+  firstTryCount   Int      @default(0)  // Number of correct guesses on first try
+  secondTryCount  Int      @default(0)  // Number of correct guesses on second try
+  thirdTryCount   Int      @default(0)  // Number of correct guesses on third try
+
+  @@index([haikuId])
+}
+
 model Haiku {
   id         Int          @id @default(autoincrement())
   title      String       @db.Text
@@ -40,4 +51,5 @@ model Haiku {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   guesses    HaikuGuess[]
+  stats      HaikuStats?  // Add this line to establish the relation
 }
