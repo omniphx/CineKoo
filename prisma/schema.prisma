@@ -14,14 +14,29 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model HaikuGuess {
+  id        Int      @id @default(autoincrement())
+  haiku     Haiku    @relation(fields: [haikuId], references: [id])
+  haikuId   Int
+  movieId   Int      // The ID of the movie that was guessed
+  count     Int      @default(1) // Number of times this movie was guessed
+  isCorrect Boolean  // Whether this movie was the correct answer
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([haikuId, movieId]) // Ensures we only have one entry per movie guess per haiku
+  @@index([haikuId])
+}
+
 model Haiku {
-  id         Int      @id @default(autoincrement())
-  title      String   @db.Text
-  date       DateTime @db.Date
-  body       String   @db.Text
-  movie_id   Int      @db.Int
-  prompt     String   @db.Text
-  difficulty String   @db.Text
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id         Int          @id @default(autoincrement())
+  title      String       @db.Text
+  date       DateTime     @db.Date
+  body       String       @db.Text
+  movie_id   Int          @db.Int
+  prompt     String       @db.Text
+  difficulty String       @db.Text
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  guesses    HaikuGuess[]
 }
