@@ -109,7 +109,7 @@ export function MovieHaikuGuess() {
             </form>
           ) : (
             <div className="space-y-4">
-              <MovieDetails todaysHaikuId={todaysHaiku?.id} />
+              <MovieDetails todaysHaikuId={todaysHaiku?.movie_id} />
               <HaikuStatsCard todaysHaikuId={todaysHaiku?.id} />
             </div>
           )}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useHaikuStats } from "../hooks/haiku-stats/useHaikuStats";
 import { useHaikuGuesses } from "../hooks/haiku-guesses/useHaikuGuesses";

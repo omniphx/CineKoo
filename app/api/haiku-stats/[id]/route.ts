@@ -85,3 +85,30 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function DELETE(
+  _: Request,
+  { params }: { params: { id: string } }
+) {
+  if (!params.id) {
+    return NextResponse.json(
+      { error: "Haiku ID is required" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await prisma.haikuStats.delete({
+      where: {
+        haikuId: parseInt(params.id),
+      },
+    });
+
+    return NextResponse.json({ message: "Stats deleted successfully" });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Unknown error" },
+      { status: 500 }
+    );
+  }
+}
