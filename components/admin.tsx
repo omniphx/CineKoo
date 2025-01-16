@@ -63,15 +63,6 @@ export function Admin() {
   const onSubmit = async (data: HaikuFormData) => {
     try {
       setErrorMessage(""); // Clear any previous errors
-
-      console.log("data", data);
-      console.log("date", data.date);
-      console.log("type", typeof data.date);
-
-      const normalizeDate = new Date(data.date);
-
-      console.log("normalizeDate", normalizeDate, normalizeDate.toISOString());
-
       const formattedData = selectedMovie
         ? {
             ...data,

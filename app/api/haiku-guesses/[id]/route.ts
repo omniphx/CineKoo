@@ -3,9 +3,8 @@ import { NextResponse } from "next/server";
 
 export const revalidate = 0;
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const haikuId = searchParams.get("haikuId");
+export async function GET(_: Request, { params }: { params: { id: string } }) {
+  const haikuId = params.id;
 
   if (!haikuId) {
     return NextResponse.json(

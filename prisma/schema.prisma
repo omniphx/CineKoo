@@ -36,6 +36,7 @@ model HaikuStats {
   firstTryCount   Int      @default(0)  // Number of correct guesses on first try
   secondTryCount  Int      @default(0)  // Number of correct guesses on second try
   thirdTryCount   Int      @default(0)  // Number of correct guesses on third try
+  tryCount        Int      @default(0)  // Number of guesses
 
   @@index([haikuId])
 }

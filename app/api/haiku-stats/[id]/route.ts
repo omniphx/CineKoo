@@ -3,11 +3,8 @@ import { NextResponse } from "next/server";
 
 export const revalidate = 0;
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const haikuId = searchParams.get("haikuId");
-
-  if (!haikuId) {
+export async function GET(_: Request, { params }: { params: { id: string } }) {
+  if (!params.id) {
     return NextResponse.json(
       { error: "Haiku ID is required" },
       { status: 400 }
@@ -17,7 +14,7 @@ export async function GET(request: Request) {
   try {
     const stats = await prisma.haikuStats.findUnique({
       where: {
-        haikuId: parseInt(haikuId),
+        haikuId: parseInt(params.id),
       },
     });
 
@@ -33,7 +30,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { haikuId, tryNumber } = body;
+    const { haikuId, tryNumber, isCorrect } = body;
 
     if (!haikuId || !tryNumber || ![1, 2, 3].includes(tryNumber)) {
       return NextResponse.json(
@@ -57,11 +54,18 @@ export async function POST(request: Request) {
     // Update the appropriate counter based on tryNumber
     const updateData = {
       firstTryCount:
-        tryNumber === 1 ? stats.firstTryCount + 1 : stats.firstTryCount,
+        isCorrect && tryNumber === 1
+          ? stats.firstTryCount + 1
+          : stats.firstTryCount,
       secondTryCount:
-        tryNumber === 2 ? stats.secondTryCount + 1 : stats.secondTryCount,
+        isCorrect && tryNumber === 2
+          ? stats.secondTryCount + 1
+          : stats.secondTryCount,
       thirdTryCount:
-        tryNumber === 3 ? stats.thirdTryCount + 1 : stats.thirdTryCount,
+        isCorrect && tryNumber === 3
+          ? stats.thirdTryCount + 1
+          : stats.thirdTryCount,
+      tryCount: stats.tryCount + 1,
     };
 
     const updatedStats = await prisma.haikuStats.update({

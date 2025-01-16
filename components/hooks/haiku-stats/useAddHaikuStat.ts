@@ -3,7 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AddHaikuStatPayload {
   haikuId: number;
-  tryNumber: 1 | 2 | 3;
+  tryNumber: number;
+  isCorrect: boolean;
 }
 
 export function useAddHaikuStat() {
@@ -11,7 +12,7 @@ export function useAddHaikuStat() {
 
   return useMutation<HaikuStats, Error, AddHaikuStatPayload>({
     mutationFn: async (payload) => {
-      const response = await fetch("/api/haiku-stats", {
+      const response = await fetch(`/api/haiku-stats/${payload.haikuId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -26,9 +27,11 @@ export function useAddHaikuStat() {
 
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       // Invalidate the haiku stats query to trigger a refetch
-      queryClient.invalidateQueries({ queryKey: ["haikuStats"] });
+      queryClient.invalidateQueries({
+        queryKey: ["haikus", "stats", variables.haikuId],
+      });
     },
   });
 }

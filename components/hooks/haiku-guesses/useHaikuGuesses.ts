@@ -1,23 +1,11 @@
+import { HaikuGuess } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
-interface HaikuGuess {
-  id: number;
-  haikuId: number;
-  guess: string;
-  correct: boolean;
-  createdAt: string;
-  userId: string;
-}
-
-interface UseHaikuGuessesOptions {
-  haikuId: number;
-}
-
-export function useHaikuGuesses({ haikuId }: UseHaikuGuessesOptions) {
+export function useHaikuGuesses(haikuId?: number) {
   return useQuery<HaikuGuess[]>({
     queryKey: ["haikus", "guesses", haikuId],
     queryFn: async () => {
-      const response = await fetch(`/api/haiku-guesses?haikuId=${haikuId}`);
+      const response = await fetch(`/api/haiku-guesses/${haikuId}`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch haiku guesses");
@@ -25,5 +13,6 @@ export function useHaikuGuesses({ haikuId }: UseHaikuGuessesOptions) {
 
       return response.json();
     },
+    enabled: !!haikuId,
   });
 }
