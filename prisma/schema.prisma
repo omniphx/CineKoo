@@ -36,6 +36,7 @@ model HaikuStats {
   firstTryCount   Int      @default(0)
   secondTryCount  Int      @default(0)
   thirdTryCount   Int      @default(0)
+  gameOverCount   Int      @default(0)
   tryCount        Int      @default(0)
 
   @@index([haikuId])

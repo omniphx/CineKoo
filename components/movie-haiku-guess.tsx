@@ -10,6 +10,7 @@ import { useDailyHaiku } from "./hooks/daily-haiku/useDailyHaiku";
 import { useAddHaikuGuess } from "./hooks/haiku-guesses/useAddHaikuGuess";
 import { useAddHaikuStat } from "./hooks/haiku-stats/useAddHaikuStat";
 import { MovieDetails } from "./ui/movie-details";
+import { HaikuStatsCard } from "./ui/haiku-stats-card";
 
 export function MovieHaikuGuess() {
   const [showHaiku, setShowHaiku] = useState(false);
@@ -107,7 +108,10 @@ export function MovieHaikuGuess() {
               </Button>
             </form>
           ) : (
-            <MovieDetails todaysHaikuId={todaysHaiku?.id} />
+            <div className="space-y-4">
+              <MovieDetails todaysHaikuId={todaysHaiku?.id} />
+              <HaikuStatsCard todaysHaikuId={todaysHaiku?.id} />
+            </div>
           )}
 
           <AnimatePresence>

@@ -1,23 +1,23 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { HaikuGuess, HaikuStats } from "@prisma/client";
+import { useHaikuStats } from "../hooks/haiku-stats/useHaikuStats";
+import { useHaikuGuesses } from "../hooks/haiku-guesses/useHaikuGuesses";
 
 interface HaikuStatsCardProps {
-  stats: HaikuStats;
-  guesses: HaikuGuess[];
-  totalGuesses: number;
+  todaysHaikuId?: number;
 }
 
-export function HaikuStatsCard({
-  stats,
-  guesses,
-  totalGuesses,
-}: HaikuStatsCardProps) {
+export function HaikuStatsCard({ todaysHaikuId }: HaikuStatsCardProps) {
+  const { data: stats } = useHaikuStats(todaysHaikuId);
+  const { data: guesses } = useHaikuGuesses(todaysHaikuId);
+
   const [activeTab, setActiveTab] = useState<"stats" | "guesses">("stats");
 
-  const calculatePercentage = (count: number) => {
-    return totalGuesses > 0 ? Math.round((count / totalGuesses) * 100) : 0;
+  const calculatePercentage = (count: number, total: number) => {
+    return total > 0 ? Math.round((count / total) * 100) : 0;
   };
+
+  if (!stats || !guesses) return null;
 
   return (
     <div className="bg-white rounded-lg p-4 mt-4">
@@ -49,14 +49,20 @@ export function HaikuStatsCard({
       {activeTab === "stats" ? (
         <div className="space-y-4">
           <p className="text-sm text-gray-500 mb-2">
-            Total Guesses: {totalGuesses}
+            Total Guesses: {stats.tryCount}
           </p>
           {[
             { label: "First Try", count: stats.firstTryCount },
             { label: "Second Try", count: stats.secondTryCount },
             { label: "Third Try", count: stats.thirdTryCount },
           ].map(({ label, count }) => {
-            const percentage = calculatePercentage(count);
+            const percentage = calculatePercentage(
+              count,
+              stats.firstTryCount +
+                stats.secondTryCount +
+                stats.thirdTryCount +
+                stats.gameOverCount
+            );
             if (percentage === 0) return null;
 
             return (
@@ -86,7 +92,10 @@ export function HaikuStatsCard({
             })
             .slice(0, 5)
             .map((guess) => {
-              const percentage = calculatePercentage(guess.count);
+              const percentage = calculatePercentage(
+                guess.count,
+                stats.tryCount
+              );
               if (percentage === 0) return null;
 
               return (
