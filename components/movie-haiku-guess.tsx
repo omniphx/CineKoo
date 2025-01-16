@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { MovieSearchInput } from "./ui/movie-search-input";
-import { useDailyHaiku } from "@/components/hooks/useDailyHaiku";
-import { useMovieDetails } from "@/components/hooks/useMovieDetails";
 import { useMovieGame } from "@/lib/store";
+import { useDailyHaiku } from "./hooks/daily-haiku/useDailyHaiku";
+import { useMovieDetails } from "./hooks/movie-details/useMovieDetails";
 
 export function MovieHaikuGuess() {
   const [showHaiku, setShowHaiku] = useState(false);

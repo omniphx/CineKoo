@@ -1,14 +1,14 @@
 "use client";
-import { useHaikus } from "@/components/hooks/useHaikus";
-import { useCreateHaiku } from "@/components/hooks/useCreateHaikus";
-import { useUpdateHaiku } from "@/components/hooks/useUpdateHaikus";
-import { useDeleteHaiku } from "@/components/hooks/useDeleteHaikus";
+import { useHaikus } from "@/components/hooks/haikus/useHaikus";
 import { useForm } from "react-hook-form";
 import { Haiku } from "@prisma/client";
 import { useState } from "react";
 import { Movie } from "@/lib/schemas";
 import { MovieSearchInput } from "./ui/movie-search-input";
 import { generatePrompt } from "@/lib/utils";
+import { useCreateHaiku } from "./hooks/haikus/useCreateHaikus";
+import { useUpdateHaiku } from "./hooks/haikus/useUpdateHaikus";
+import { useDeleteHaiku } from "./hooks/haikus/useDeleteHaikus";
 
 type HaikuFormData = Omit<Haiku, "id" | "date"> & {
   date: string;
