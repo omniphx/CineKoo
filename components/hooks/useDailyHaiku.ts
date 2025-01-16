@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export function useDailyHaiku() {
   return useQuery<Haiku>({
-    queryKey: ["haikus"],
+    queryKey: ["haikus", "daily"],
     queryFn: () => fetch("/api/haikus/daily").then((res) => res.json()),
   });
 }
