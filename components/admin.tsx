@@ -214,7 +214,8 @@ export function Admin() {
             </label>
             <input
               {...register("movie_id", { required: true })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              readOnly
+              className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </div>
           <div>
