@@ -16,27 +16,27 @@ generator client {
 
 model HaikuGuess {
   id         Int      @id @default(autoincrement())
-  haiku      Haiku    @relation(fields: [haikuId], references: [id])
+  haiku      Haiku    @relation("HaikuToGuesses", fields: [haikuId], references: [id], onDelete: Cascade)
   haikuId    Int
-  movieId    Int      // The ID of the movie that was guessed
-  movieTitle String   @db.Text // Store the movie title directly
-  count      Int      @default(1) // Number of times this movie was guessed
-  isCorrect  Boolean  // Whether this movie was the correct answer
+  movieId    Int      
+  movieTitle String   @db.Text 
+  count      Int      @default(1)
+  isCorrect  Boolean  
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@unique([haikuId, movieId]) // Ensures we only have one entry per movie guess per haiku
+  @@unique([haikuId, movieId])
   @@index([haikuId])
 }
 
 model HaikuStats {
   id              Int      @id @default(autoincrement())
-  haiku           Haiku    @relation(fields: [haikuId], references: [id])
-  haikuId         Int      @unique  // One-to-one relationship with Haiku
-  firstTryCount   Int      @default(0)  // Number of correct guesses on first try
-  secondTryCount  Int      @default(0)  // Number of correct guesses on second try
-  thirdTryCount   Int      @default(0)  // Number of correct guesses on third try
-  tryCount        Int      @default(0)  // Number of guesses
+  haiku           Haiku    @relation("HaikuToStats", fields: [haikuId], references: [id], onDelete: Cascade)
+  haikuId         Int      @unique
+  firstTryCount   Int      @default(0)
+  secondTryCount  Int      @default(0)
+  thirdTryCount   Int      @default(0)
+  tryCount        Int      @default(0)
 
   @@index([haikuId])
 }
@@ -46,11 +46,13 @@ model Haiku {
   title      String       @db.Text
   date       DateTime     @db.Date
   body       String       @db.Text
-  movie_id   Int          @db.Int
+  movie_id   Int
   prompt     String       @db.Text
   difficulty String       @db.Text
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
-  guesses    HaikuGuess[]
-  stats      HaikuStats?  // Add this line to establish the relation
+  guesses    HaikuGuess[] @relation("HaikuToGuesses")
+  stats      HaikuStats[] @relation("HaikuToStats")
+
+  @@index([id])
 }

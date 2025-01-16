@@ -9,6 +9,8 @@
     "lint": "next lint",
     "pull:env": "vercel env pull",
     "prisma:push": "npx dotenv -e .env.local -- prisma db push",
+    "prisma:reset": "npx dotenv -e .env.local -- prisma migrate reset",
+    "prisma:generate": "npx dotenv -e .env.local -- prisma generate",
     "migrate:postgres": "npx dotenv -e .env.local -- prisma migrate deploy"
   },
   "dependencies": {
