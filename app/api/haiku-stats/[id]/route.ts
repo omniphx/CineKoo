@@ -66,7 +66,7 @@ export async function POST(request: Request) {
           ? stats.thirdTryCount + 1
           : stats.thirdTryCount,
       gameOverCount:
-        !isCorrect && tryNumber === 4
+        !isCorrect && tryNumber === 3
           ? stats.gameOverCount + 1
           : stats.gameOverCount,
       tryCount: stats.tryCount + 1,

@@ -56,13 +56,7 @@ export function HaikuStatsCard({ todaysHaikuId }: HaikuStatsCardProps) {
             { label: "Second Try", count: stats.secondTryCount },
             { label: "Third Try", count: stats.thirdTryCount },
           ].map(({ label, count }) => {
-            const percentage = calculatePercentage(
-              count,
-              stats.firstTryCount +
-                stats.secondTryCount +
-                stats.thirdTryCount +
-                stats.gameOverCount
-            );
+            const percentage = calculatePercentage(count, stats.tryCount);
             if (percentage === 0) return null;
 
             return (
