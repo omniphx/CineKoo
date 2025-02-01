@@ -7,7 +7,7 @@ export default function Page() {
     <Providers>
       <MovieHaikuGuess />
       <a
-        href="https://github.com/omniphx/reel-haikus"
+        href="https://github.com/omniphx/CineKoo"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-4 right-4 text-white/80 hover:text-white transition-colors flex items-center gap-2"
