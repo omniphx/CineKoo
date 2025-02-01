@@ -63,14 +63,14 @@ export function MovieHaikuGuess() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-teal-400 via-purple-500 to-red-500">
       <Card className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-sm shadow-lg">
         <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="text-2xl sm:text-3xl font-bold text-center bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent p-2">
-            ✨ Reel Haikus ✨
+          <CardTitle className="text-4xl sm:text-5xl font-titan-one text-center bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent p-2">
+            ✨ CineKoo ✨
           </CardTitle>
         </CardHeader>
         <CardContent className="pb-4 sm:pb-6">
           <div className="mb-4 sm:mb-6 text-center">
             <p className="text-base sm:text-lg font-semibold mb-2 text-gray-700">
-              Guess the movie based on this haiku:
+              Guess the movie based on this haiku...
             </p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
