@@ -20,8 +20,8 @@ const titanOne = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Cinekoo",
-  description: "Guess the movie based on this haiku",
+  title: "Guess the film! - Cinekoo",
+  description: "A movie guessing game based on a daily haiku",
 };
 
 export default function RootLayout({
