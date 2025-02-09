@@ -1,11 +1,9 @@
 import { HaikuStats } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
-export function useHaikuStats(haikuId?: number) {
+export function useHaikuStats() {
   return useQuery<HaikuStats | null>({
-    queryKey: ["haikus", "stats", haikuId],
-    queryFn: () =>
-      fetch(`/api/haiku-stats/${haikuId}`).then((res) => res.json()),
-    enabled: !!haikuId,
+    queryKey: ["haikus", "stats"],
+    queryFn: () => fetch(`/api/haiku-stats`).then((res) => res.json()),
   });
 }

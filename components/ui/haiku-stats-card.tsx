@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { useHaikuStats } from "../hooks/haiku-stats/useHaikuStats";
-import { useHaikuGuesses } from "../hooks/haiku-guesses/useHaikuGuesses";
+import { useHaikuStatsById } from "../hooks/haiku-stats/useHaikuStatsById";
+import { useHaikuGuessesById } from "../hooks/haiku-guesses/useHaikuGuessesById";
 
 interface HaikuStatsCardProps {
   todaysHaikuId?: number;
 }
 
 export function HaikuStatsCard({ todaysHaikuId }: HaikuStatsCardProps) {
-  const { data: stats } = useHaikuStats(todaysHaikuId);
-  const { data: guesses } = useHaikuGuesses(todaysHaikuId);
+  const { data: stats } = useHaikuStatsById(todaysHaikuId);
+  const { data: guesses } = useHaikuGuessesById(todaysHaikuId);
 
   const [activeTab, setActiveTab] = useState<"stats" | "guesses">("stats");
 
