@@ -9,6 +9,7 @@ import { generatePrompt } from "@/lib/utils";
 import { useCreateHaiku } from "./hooks/haikus/useCreateHaikus";
 import { useUpdateHaiku } from "./hooks/haikus/useUpdateHaikus";
 import { useDeleteHaiku } from "./hooks/haikus/useDeleteHaikus";
+import { useHaikuStats } from "./hooks/haiku-stats/useHaikuStats";
 
 type HaikuFormData = Omit<Haiku, "id" | "date"> & {
   date: string;
@@ -19,6 +20,7 @@ export function Admin() {
   const createHaiku = useCreateHaiku();
   const updateHaiku = useUpdateHaiku();
   const deleteHaiku = useDeleteHaiku();
+  const { data: stats } = useHaikuStats();
   const [editingHaiku, setEditingHaiku] = useState<Haiku>();
   const [selectedMovie, setSelectedMovie] = useState<Movie>();
   const [movieQuery, setMovieQuery] = useState("");
@@ -283,6 +285,9 @@ export function Admin() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Stats
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -341,6 +346,43 @@ export function Admin() {
                           </svg>
                           Delete
                         </button>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm">
+                        {/* Get stats for this haiku */}
+                        {stats?.find((s) => s.haikuId === haiku.id) && (
+                          <div>
+                            <p>Correct guesses:</p>
+                            <ul className="list-disc list-inside">
+                              <li>
+                                First try:{" "}
+                                {stats.find((s) => s.haikuId === haiku.id)
+                                  ?.firstTryCount || 0}
+                              </li>
+                              <li>
+                                Second try:{" "}
+                                {stats.find((s) => s.haikuId === haiku.id)
+                                  ?.secondTryCount || 0}
+                              </li>
+                              <li>
+                                Third try:{" "}
+                                {stats.find((s) => s.haikuId === haiku.id)
+                                  ?.thirdTryCount || 0}
+                              </li>
+                            </ul>
+                            <p>
+                              Failed attempts:{" "}
+                              {stats.find((s) => s.haikuId === haiku.id)
+                                ?.gameOverCount || 0}
+                            </p>
+                            <p>
+                              Total attempts:{" "}
+                              {stats.find((s) => s.haikuId === haiku.id)
+                                ?.tryCount || 0}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>
