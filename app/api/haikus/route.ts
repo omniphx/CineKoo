@@ -10,8 +10,12 @@ import { NextResponse } from "next/server";
 export const revalidate = 0;
 
 export async function GET() {
-  const haikus = await prisma.haiku.findMany();
-  return NextResponse.json(haikus);
+  try {
+    const haikus = await prisma.haiku.findMany();
+    return NextResponse.json(haikus);
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
 export async function POST(request: Request) {
