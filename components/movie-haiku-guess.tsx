@@ -20,7 +20,7 @@ export function MovieHaikuGuess() {
   const [useDaily, setUseDaily] = useState(true);
   
   const { data: todaysHaiku } = useDailyHaiku();
-  const { getRandomUnplayedHaiku } = useRandomHaiku();
+  const { getRandomUnplayedHaiku, getUnplayedHaikusCount } = useRandomHaiku();
   
   const activeHaiku = useDaily ? todaysHaiku : currentHaiku;
   const dailyMovieId = activeHaiku?.movie_id || 0;
@@ -78,6 +78,9 @@ export function MovieHaikuGuess() {
     }
   };
 
+  const unplayedCount = getUnplayedHaikusCount();
+  const hasUnplayedHaikus = unplayedCount > 0;
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-teal-400 via-purple-500 to-red-500">
       <Card className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-sm shadow-lg">
@@ -130,12 +133,23 @@ export function MovieHaikuGuess() {
             <div className="space-y-4">
               <MovieDetails todaysHaikuId={activeHaiku?.movie_id} />
               <HaikuStatsCard todaysHaikuId={activeHaiku?.id} />
-              <Button
-                onClick={handleTryAnother}
-                className="w-full text-base sm:text-lg py-2 sm:py-3 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
-              >
-                Try Another Haiku 🎲
-              </Button>
+              {hasUnplayedHaikus ? (
+                <Button
+                  onClick={handleTryAnother}
+                  className="w-full text-base sm:text-lg py-2 sm:py-3 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
+                >
+                  Try Another Haiku 🎲
+                </Button>
+              ) : (
+                <div className="text-center p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg border border-purple-200">
+                  <p className="text-base sm:text-lg font-semibold text-purple-700 mb-2">
+                    🎉 Congratulations! 🎉
+                  </p>
+                  <p className="text-sm sm:text-base text-purple-600">
+                    You&apos;ve guessed all available haikus! Check back later for new ones.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 

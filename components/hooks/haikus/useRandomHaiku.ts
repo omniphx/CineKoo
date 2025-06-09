@@ -21,5 +21,15 @@ export function useRandomHaiku() {
     return unplayedHaikus[randomIndex];
   };
 
-  return { getRandomUnplayedHaiku };
+  const getUnplayedHaikusCount = () => {
+    if (!haikus) return 0;
+    
+    const unplayedHaikus = haikus.filter(
+      (haiku) => !games[haiku.movie_id]?.gameOver
+    );
+    
+    return unplayedHaikus.length;
+  };
+
+  return { getRandomUnplayedHaiku, getUnplayedHaikusCount };
 }
