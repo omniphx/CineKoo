@@ -7,15 +7,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MovieSearchInput } from "./ui/movie-search-input";
 import { useMovieGame } from "@/lib/store";
 import { useDailyHaiku } from "./hooks/daily-haiku/useDailyHaiku";
+import { useRandomHaiku } from "./hooks/haikus/useRandomHaiku";
 import { useAddHaikuGuess } from "./hooks/haiku-guesses/useAddHaikuGuess";
 import { useAddHaikuStat } from "./hooks/haiku-stats/useAddHaikuStat";
 import { MovieDetails } from "./ui/movie-details";
 import { HaikuStatsCard } from "./ui/haiku-stats-card";
+import { Haiku } from "@prisma/client";
 
 export function MovieHaikuGuess() {
   const [showHaiku, setShowHaiku] = useState(false);
+  const [currentHaiku, setCurrentHaiku] = useState<Haiku | null>(null);
+  const [useDaily, setUseDaily] = useState(true);
+  
   const { data: todaysHaiku } = useDailyHaiku();
-  const dailyMovieId = todaysHaiku?.movie_id || 0;
+  const { getRandomUnplayedHaiku } = useRandomHaiku();
+  
+  const activeHaiku = useDaily ? todaysHaiku : currentHaiku;
+  const dailyMovieId = activeHaiku?.movie_id || 0;
 
   const {
     guess,
@@ -37,13 +45,13 @@ export function MovieHaikuGuess() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!todaysHaiku?.id) return;
+    if (!activeHaiku?.id) return;
 
-    const isCorrect = guess.toLowerCase() === todaysHaiku?.title.toLowerCase();
+    const isCorrect = guess.toLowerCase() === activeHaiku?.title.toLowerCase();
 
     // Record the guess
     addGuess({
-      haikuId: todaysHaiku?.id,
+      haikuId: activeHaiku?.id,
       movieId: selection?.id || 0,
       movieTitle: guess,
       isCorrect: isCorrect,
@@ -51,12 +59,23 @@ export function MovieHaikuGuess() {
 
     // Update stats
     addStat({
-      haikuId: todaysHaiku?.id,
+      haikuId: activeHaiku?.id,
       tryNumber: attempts + 1,
       isCorrect: isCorrect,
     });
 
-    submitGuess(todaysHaiku.movie_id);
+    submitGuess(activeHaiku.movie_id);
+  };
+
+  const handleTryAnother = () => {
+    const randomHaiku = getRandomUnplayedHaiku();
+    if (randomHaiku) {
+      setCurrentHaiku(randomHaiku);
+      setUseDaily(false);
+      setShowHaiku(false);
+      // Reset the haiku animation
+      setTimeout(() => setShowHaiku(true), 100);
+    }
   };
 
   return (
@@ -78,7 +97,7 @@ export function MovieHaikuGuess() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="italic text-base sm:text-lg"
             >
-              {todaysHaiku?.body.split("\n").map((line, index) => (
+              {activeHaiku?.body.split("\n").map((line, index) => (
                 <motion.span
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
@@ -109,8 +128,14 @@ export function MovieHaikuGuess() {
             </form>
           ) : (
             <div className="space-y-4">
-              <MovieDetails todaysHaikuId={todaysHaiku?.movie_id} />
-              <HaikuStatsCard todaysHaikuId={todaysHaiku?.id} />
+              <MovieDetails todaysHaikuId={activeHaiku?.movie_id} />
+              <HaikuStatsCard todaysHaikuId={activeHaiku?.id} />
+              <Button
+                onClick={handleTryAnother}
+                className="w-full text-base sm:text-lg py-2 sm:py-3 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
+              >
+                Try Another Haiku 🎲
+              </Button>
             </div>
           )}
 
