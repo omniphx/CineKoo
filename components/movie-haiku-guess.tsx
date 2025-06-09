@@ -18,10 +18,10 @@ export function MovieHaikuGuess() {
   const [showHaiku, setShowHaiku] = useState(false);
   const [currentHaiku, setCurrentHaiku] = useState<Haiku | null>(null);
   const [useDaily, setUseDaily] = useState(true);
-  
+
   const { data: todaysHaiku } = useDailyHaiku();
   const { getRandomUnplayedHaiku, getUnplayedHaikusCount } = useRandomHaiku();
-  
+
   const activeHaiku = useDaily ? todaysHaiku : currentHaiku;
   const dailyMovieId = activeHaiku?.movie_id || 0;
 
@@ -146,7 +146,8 @@ export function MovieHaikuGuess() {
                     🎉 Congratulations! 🎉
                   </p>
                   <p className="text-sm sm:text-base text-purple-600">
-                    You&apos;ve guessed all available haikus! Check back later for new ones.
+                    You&apos;ve guessed all available haikus! Check back
+                    tomorrow for a new one.
                   </p>
                 </div>
               )}
