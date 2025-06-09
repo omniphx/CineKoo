@@ -9,9 +9,13 @@ export function useRandomHaiku() {
   const getRandomUnplayedHaiku = () => {
     if (!haikus) return null;
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+
     // Filter out haikus that have been played (have game state and are complete)
+    // and only include past haikus (date < today)
     const unplayedHaikus = haikus.filter(
-      (haiku) => !games[haiku.movie_id]?.gameOver
+      (haiku) => !games[haiku.movie_id]?.gameOver && new Date(haiku.date) < today
     );
 
     if (unplayedHaikus.length === 0) return null;
@@ -24,8 +28,11 @@ export function useRandomHaiku() {
   const getUnplayedHaikusCount = () => {
     if (!haikus) return 0;
     
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+    
     const unplayedHaikus = haikus.filter(
-      (haiku) => !games[haiku.movie_id]?.gameOver
+      (haiku) => !games[haiku.movie_id]?.gameOver && new Date(haiku.date) < today
     );
     
     return unplayedHaikus.length;
